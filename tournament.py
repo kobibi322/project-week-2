@@ -145,3 +145,100 @@ def calculate_points(match):
     else:
         away_points = 3
     return (home_points, away_points)
+
+# task 5
+def sort_teams(teams):
+    if not teams:
+        logging.warning("Attempted to sort teams, but the teams list is empty.")
+        raise ValueError("There are no teams to show.")
+    s1 = sorted(teams, key=lambda t: t["name"].lower())
+    s2 = sorted(s1, key=lambda t: t["goals_for"], reverse=True)
+    s3 = sorted(s2, key=lambda t: t["goals_for"] - t["goals_against"], reverse=True)
+    sorted_teams = sorted(s3, key=lambda t: t["points"], reverse=True)    
+    return sorted_teams
+
+def show_sorted_teams(sorted_teams):
+    for team in sorted_teams:
+        deference_goals = team["goals_for"] - team["goals_against"]
+        print(f"Name: {team['name']}, played: {team['played']}, wins: {team['wins']}, draws: {team['draws']}, losses: {team['losses']}, goals for: {team['goals_for']}, goals against: {team['goals_against']}, def: {deference_goals}, points: {team['points']}")
+
+# task 6        
+def best_team(sorted_teams):
+    if not sorted_teams or sorted_teams[0]["played"] == 0:
+        logging.warning("Attempted to get the best team, but no games have been played yet.")
+        raise ValueError("There isn't best team yet")
+    return sorted_teams[0]
+
+# task 7 
+def best_score_team(teams):
+    played_teams = []
+    for team in teams:
+        if team["played"] > 0:
+            played_teams.append(team)
+    if not played_teams:
+        raise ValueError("No games played yet.")
+    max_goals = -1
+    for team in played_teams:
+        if team["goals_for"] > max_goals:
+            max_goals = team["goals_for"]       
+    best_teams = []
+    for team in played_teams:
+        if team["goals_for"] == max_goals:
+            best_teams.append(team["name"])           
+    return best_teams
+
+# task 8
+def success_percentage(team):
+    if not team["played"]:
+        logging.warning(f"Attempted success percentage for team ID {team['id']} with zero games played.")
+        raise ValueError("No games")
+    percent = team["points"] / (team["played"] * 3) * 100
+    return percent
+
+def get_team_by_id(teams, team_id):
+    validate_id(team_id)
+    id_val = int(team_id)
+    for team in teams:
+        if team["id"] == id_val:
+            return team
+    logging.warning(f"Team with ID {team_id} does not exist during lookup.")
+    raise ValueError(f"Team with ID {team_id} does not exist.")
+
+# task 9
+def teams_not_win(teams):
+    for team in teams:
+        if team["played"] and team["wins"] == 0:
+            print(f"Name: {team['name']}, Played: {team['played']} Points: {team['points']}")
+            
+# task 10
+def calculate_tournament_summary(teams, matches):
+    if not matches:
+        logging.warning("Attempted to calculate tournament summary, but no matches exist.")
+        raise ValueError("No matches!")
+    num_of_teams = len(teams)
+    num_of_matches = len(matches)
+    num_of_goals = 0
+    num_of_draws = 0
+    for team in teams:
+        num_of_goals += team["goals_for"]
+        num_of_draws += team["draws"]
+    num_of_draws /= 2
+    avg_goals_match = round((num_of_goals / num_of_matches), 2)
+    sorted_t = sort_teams(teams)
+    the_best_team = best_team(sorted_t)
+    return {
+        "num_of_teams": num_of_teams,
+        "num_of_matches": num_of_matches,
+        "num_of_goals": num_of_goals,
+        "avg_goals_match": avg_goals_match,
+        "num_of_draws": num_of_draws,
+        "leading_team": the_best_team['name']
+    }
+
+def show_tournament_summary(summary):
+    print(f"Number of teams: {summary['num_of_teams']}")
+    print(f"Number of matches: {summary['num_of_matches']}")
+    print(f"Total goals: {summary['num_of_goals']}")
+    print(f"Average goals per match: {summary['avg_goals_match']}")
+    print(f"Number of draws: {summary['num_of_draws']}")
+    print(f"Leading team: {summary['leading_team']}")
