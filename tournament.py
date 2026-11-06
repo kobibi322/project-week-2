@@ -209,7 +209,7 @@ def teams_not_win(teams):
     for team in teams:
         if team["played"] and team["wins"] == 0:
             print(f"Name: {team['name']}, Played: {team['played']} Points: {team['points']}")
-            
+
 # task 10
 def calculate_tournament_summary(teams, matches):
     if not matches:
@@ -242,3 +242,104 @@ def show_tournament_summary(summary):
     print(f"Average goals per match: {summary['avg_goals_match']}")
     print(f"Number of draws: {summary['num_of_draws']}")
     print(f"Leading team: {summary['leading_team']}")
+
+# main
+def main():
+    teams = []
+    matches = []
+    logging.info("Tournament manager system initialized.")
+    while True:
+        print("\n========== TOURNAMENT MANAGER ==========")
+        print("1. Add team")
+        print("2. Show all teams")
+        print("3. Add match result")
+        print("4. Show standings")
+        print("5. Show leading team")
+        print("6. Show best attacking team")
+        print("7. Show team success rate")
+        print("8. Show teams without wins")
+        print("9. Show tournament summary")
+        print("10. Check championship potential")
+        print("0. Exit")
+        choice = input("Choose an option: ").strip()
+        if choice == "0":
+            logging.info("Tournament manager system closed by user.")
+            break   
+        elif choice == "1":
+            try:
+                id_input = input("Enter team ID (positive integer): ")
+                name_input = input("Enter team name: ")
+                add_team(teams, id_input, name_input)
+                print("Team added successfully.")
+            except ValueError as e:
+                logging.warning(f"Menu option 1 failed: {e}")
+                print(f"Error: {e}")       
+        elif choice == "2":
+            try:
+                show_teams(teams)
+            except ValueError as e:
+                logging.warning(f"Menu option 2 failed: {e}")
+                print(f"Error: {e}")        
+        elif choice == "3":
+            try:
+                home_id = int(input("Enter home team ID: "))
+                away_id = int(input("Enter away team ID: "))
+                home_g = input("Enter home goals: ")
+                away_g = input("Enter away goals: ")
+                add_matches(teams, matches, home_id, away_id, home_g, away_g)
+                print("Match result added and update details in teams.")
+            except ValueError as e:
+                logging.warning(f"Menu option 3 failed: {e}")
+                print(f"Error: {e}")       
+        elif choice == "4":
+            try:
+                sorted_teams_list = sort_teams(teams)
+                show_sorted_teams(sorted_teams_list)
+            except ValueError as e:
+                logging.warning(f"Menu option 4 failed: {e}")
+                print(f"Error: {e}")   
+        elif choice == "5":
+            try:
+                sorted_teams_list = sort_teams(teams)
+                leader = best_team(sorted_teams_list)
+                print(f"Leading team: {leader['name']} with {leader['points']} points.")
+            except ValueError as e:
+                logging.warning(f"Menu option 5 failed: {e}")
+                print(f"Error: {e}")
+        elif choice == "6":
+            try:
+                best_teams_list = best_score_team(teams)
+                print(f"Best attacking team(s): {best_teams_list}")
+            except ValueError as e:
+                logging.warning(f"Menu option 6 failed: {e}")
+                print(f"Error: {e}")
+        elif choice == "7":
+            try:
+                team_id_input = input("Enter team ID to check success rate: ")
+                found_team = get_team_by_id(teams, team_id_input)
+                rate = success_percentage(found_team)
+                print(f"Success rate for {found_team['name']}: {rate:.2f}%")
+            except ValueError as e:
+                logging.warning(f"Menu option 7 failed: {e}")
+                print(f"Error: {e}")  
+        elif choice == "8":
+            try:
+                teams_not_win(teams)
+            except ValueError as e:
+                logging.warning(f"Menu option 8 failed: {e}")
+                print(f"Error: {e}")
+        elif choice == "9":
+            try:
+                summary = calculate_tournament_summary(teams, matches)
+                show_tournament_summary(summary)
+            except ValueError as e:
+                logging.warning(f"Menu option 9 failed: {e}")
+                print(f"Error: {e}")
+        elif choice == "10":
+            print("Championship potential option (Challenge task).")
+        else:
+            logging.warning(f"Invalid menu choice entered: {choice}")
+            print("Invalid option. Please choose a number between 0 and 10.")
+
+if __name__ == "__main__":
+    main()
